@@ -159,7 +159,7 @@ xtro.rnaseq.transcript <- ExpressionSet(assayData = transcript.assayData,
 ## Writing data sets
 
 ```{r,eval=FALSE}
-usethis::use_data(mpreg.rnaseq.gene,internal = FALSE, overwrite = TRUE)
-usethis::use_data(mpreg.rnaseq.transcript,internal = FALSE, overwrite = TRUE)
+usethis::use_data(xtro.rnaseq.gene,internal = FALSE, overwrite = TRUE)
+usethis::use_data(xtro.rnaseq.transcript,internal = FALSE, overwrite = TRUE)
 ```
 
