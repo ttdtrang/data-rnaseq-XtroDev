@@ -53,15 +53,15 @@ starLog = read.table(file.path(Sys.getenv('DBDIR'),
 meta1 = data.frame(t(starLog[,-c(1,2)])) %>%
     set_colnames(paste0('starAlignment.',starLog[[1]])) %>%
     set_rownames(colnames(starLog)[-c(1,2)])
-meta1$BiosampleId = rownames(meta1)
+meta1$RunId = rownames(meta1)
 str(meta1)
 ```
 
 ```{r}
 libnames <- colnames(gene.assayData$exprs) %>% as.character()
-allMeta <- data.frame('BiosampleId' = libnames) %>%
-    plyr::join(y = metadata, by = 'BiosampleId', type = 'left')  %>%
-    plyr::join(y = meta1, by = 'BiosampleId', type = 'left') %>%
+allMeta <- data.frame('RunId' = libnames) %>%
+    plyr::join(y = metadata, by = 'RunId', type = 'left')  %>%
+    plyr::join(y = meta1, by = 'RunId', type = 'left') %>%
     set_rownames(libnames)
 colDescription = colnames(allMeta)
 colDescription[grepl('starAlignment', colnames(allMeta))] = starLog[[2]]
@@ -73,7 +73,7 @@ phenoData@varMetadata
 Making sure sample order is preserved
 
 ```{r}
-all(phenoData@data$BiosampleId == colnames(gene.counts))
+all(phenoData@data$RunId == colnames(gene.counts))
 ```
 
 ### Annotations and features
