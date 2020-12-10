@@ -18,8 +18,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Download count matrices and meta data, set environment variable 'DBDIR'
 
-```{r,eval = FALSE}
+```{r}
 Sys.setenv('DBDIR' = './Ensembl')
+file.metadata_sra = 'PRJNA275011_metadata_cleaned.tsv'
+file.metadata_fastq = 'fastq_metadata.tsv'
 ```
 
 
@@ -41,8 +43,9 @@ ExpressionSet(assayData = gene.assayData)
 ### Phenotypic data
 
 ```{r}
-metadata = read.table(file.path(Sys.getenv('DBDIR'),
-                                'PRJNA275011_metadata_cleaned.tsv'), sep = '\t', header = TRUE)
+meta1 = read.table(file.path(Sys.getenv('DBDIR'), file.metadata_sra), sep = '\t', header = TRUE)
+meta2 = read.table(file.path(Sys.getenv('DBDIR'), file.metadata_fastq), sep = '\t', header = TRUE)
+meta12 = plyr::join(meta1, meta2, by = 'RunId')
 
 
 ```
@@ -50,18 +53,18 @@ metadata = read.table(file.path(Sys.getenv('DBDIR'),
 ```{r}
 starLog = read.table(file.path(Sys.getenv('DBDIR'),
                                'starLog.final.tsv'), sep = '\t',header=TRUE)
-meta1 = data.frame(t(starLog[,-c(1,2)])) %>%
+meta3 = data.frame(t(starLog[,-c(1,2)])) %>%
     set_colnames(paste0('starAlignment.',starLog[[1]])) %>%
     set_rownames(colnames(starLog)[-c(1,2)])
-meta1$RunId = rownames(meta1)
-str(meta1)
+meta3$RunId = rownames(meta3)
+str(meta3)
 ```
 
 ```{r}
 libnames <- colnames(gene.assayData$exprs) %>% as.character()
 allMeta <- data.frame('RunId' = libnames) %>%
-    plyr::join(y = metadata, by = 'RunId', type = 'left')  %>%
-    plyr::join(y = meta1, by = 'RunId', type = 'left') %>%
+    plyr::join(y = meta12, by = 'RunId', type = 'left')  %>%
+    plyr::join(y = meta3, by = 'RunId', type = 'left') %>%
     set_rownames(libnames)
 colDescription = colnames(allMeta)
 colDescription[grepl('starAlignment', colnames(allMeta))] = starLog[[2]]
